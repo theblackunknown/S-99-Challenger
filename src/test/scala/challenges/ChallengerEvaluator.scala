@@ -1,0 +1,360 @@
+package challenges
+
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FeatureSpec
+import org.scalatest.prop.Checkers
+import org.scalacheck.Prop._
+import challenges.Challenger._
+import org.scalacheck.Gen
+
+/**
+ *
+ * @author Andréa
+ * @version 1.0 28/03/11
+ */
+
+class ChallengerEvaluator extends FeatureSpec
+with ShouldMatchers
+with Checkers {
+
+  println("A challenger come to face all challenges ! ")
+
+  feature("Challenge 01 : Find the last element of a list") {
+
+    scenario("Invoked on a empty list") {
+      evaluating {
+        last(Nil)
+      } should produce[NoSuchElementException]
+    }
+
+    scenario("Invoked on a list") {
+      check(
+        (list: List[Int]) =>
+          list.nonEmpty ==> (last(list) == list.last)
+      )
+    }
+
+  }
+
+  feature("Challenge 02 : Find the last but one element of a list") {
+
+    scenario("Invoked on a empty list") {
+      evaluating {
+        penultimate(Nil)
+      } should produce[NoSuchElementException]
+    }
+
+    scenario("Invoked on a singleton list") {
+      evaluating {
+        penultimate(List(42))
+      } should produce[NoSuchElementException]
+    }
+
+    scenario("Invoked on a list") {
+      check(
+        (list: List[Int]) =>
+          list.length > 1 ==> (penultimate(list) == list.init.last)
+      )
+    }
+
+  }
+
+  feature("Challenge 03 : Find the Kth element of a list") {
+
+    scenario("Invoked on a empty list") {
+      evaluating {
+        nth(42, Nil)
+      } should produce[ArrayIndexOutOfBoundsException]
+    }
+
+    scenario("Invoked on a smaller list") {
+      evaluating {
+        nth(42, List(42))
+      } should produce[ArrayIndexOutOfBoundsException]
+    }
+
+    scenario("Invoked on a list") {
+      //Scala Check Style
+      check {
+        (position: Int, list: List[Int]) =>
+          (
+            list.nonEmpty && (0 until list.length).contains(position)
+            ) ==> (
+            nth(position, list) == list(position)
+            )
+      }
+    }
+
+  }
+
+  feature("Challenge 04 : Find the number of elements of a list") {
+
+    scenario("Invoked on a list") {
+      check {
+        list: List[Int] => challenges.Challenger.length(list) == list.length
+      }
+    }
+
+  }
+
+  feature("Challenge 05 : Reverse a list") {
+
+    scenario("Invoked on a list") {
+      check {
+        list: List[Int] => reverse(list) == list.reverse
+      }
+    }
+
+  }
+
+  feature("Challenge 06 : Find out whether a list is a palindrome") {
+
+    scenario("Invoked on a empty list") {
+      isPalindrome(Nil) should be(true)
+    }
+
+    scenario("Invoked on a singleton list") {
+      isPalindrome(List(42)) should be(true)
+    }
+
+    scenario("Invoked on a list") {
+      //TODO : Find a general expression different from custom implementation
+      isPalindrome(List(1, 2, 3, 2, 1)) should be(true)
+    }
+
+  }
+
+  feature("Challenge 07 : Flatten a nested list structure") {
+
+    scenario("Invoked on a nested list") {
+      check {
+        list: List[List[Int]] => flatten(list) == list.flatten
+      }
+    }
+
+  }
+
+  feature("Challenge 08 : Eliminate consecutive duplicates of list elements") {
+
+    scenario("Invoked on a empty list") {
+      compress(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      //TODO : No built-in
+      compress(List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)) should be(List('a, 'b, 'c, 'a, 'd, 'e))
+    }
+
+  }
+
+  feature("Challenge 09 : Pack consecutive duplicates of list elements into sublists") {
+
+    scenario("Invoked on a empty list") {
+      pack(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      pack(
+        List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+      ) should be(
+        List(List('a, 'a, 'a, 'a), List('b), List('c, 'c), List('a, 'a), List('d), List('e, 'e, 'e, 'e))
+      )
+    }
+  }
+
+  feature("Challenge 10 : Run-length encoding of a list") {
+
+    info(
+      """  Use the result of problem Challenge 09 to implement the so-called run-length encoding data compression method.
+      Consecutive duplicates of elements are encoded as tuples (N, E) where N is the number of duplicates of the element E.""")
+
+    scenario("Invoked on a empty list") {
+      encode(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      encode(
+        List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+      ) should be(
+        List((4, 'a), (1, 'b), (2, 'c), (2, 'a), (1, 'd), (4, 'e))
+      )
+    }
+  }
+
+  feature("Challenge 11 : Modified run-length encoding") {
+
+    info(
+      """   Modify the result of problem Challenge 10 in such a way that
+      if an element has no duplicates it is simply copied into the result list.
+      Only elements with duplicates are transferred as (N, E) terms.""")
+
+    scenario("Invoked on a empty list") {
+      encodeModified(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      encodeModified(
+        List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+      ) should be(
+        List((4, 'a), 'b, (2, 'c), (2, 'a), 'd, (4, 'e))
+      )
+    }
+  }
+
+  feature("Challenge 12 : Decode a run-length encoded list") {
+
+    info(
+      """   Given a run-length code list generated as specified in problem Challenge 10, construct its uncompressed version.""")
+
+    scenario("Invoked on a empty list") {
+      decode(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      decode(
+        List((4, 'a), (1, 'b), (2, 'c), (2, 'a), (1, 'd), (4, 'e))
+      ) should be(
+        List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+      )
+    }
+  }
+
+  feature("Challenge 13 : Run-length encoding of a list (direct solution).") {
+
+    info(
+      """   Implement the so-called run-length encoding data compression method directly.
+      I.e. don't use other methods you've written (like P09's pack); do all the work directly.""")
+
+    scenario("Invoked on a empty list") {
+      encodeDirect(Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a list") {
+      encodeDirect(
+        List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+      ) should be(
+        List((4, 'a), (1, 'b), (2, 'c), (2, 'a), (1, 'd), (4, 'e))
+      )
+    }
+  }
+
+  feature("Challenge 14 : Duplicate the elements of a list") {
+
+    scenario("Invoked on a list") {
+      check {
+        (list: List[Int]) =>
+          duplicate(list) == (list flatMap {
+            item => List(item, item)
+          })
+      }
+    }
+  }
+
+  feature("Challenge 15 : Duplicate the elements of a list a given number of times") {
+
+    scenario("Invoked on a list") {
+      duplicateN(
+        3, List('a, 'b, 'c, 'c, 'd)
+      ) should be(
+        List('a, 'a, 'a, 'b, 'b, 'b, 'c, 'c, 'c, 'c, 'c, 'c, 'd, 'd, 'd)
+      )
+    }
+  }
+
+  feature("Challenge 16 : Drop every Nth element from a list") {
+
+    scenario("Invoked on a empty list") {
+      drop(3, Nil) should be(Nil)
+    }
+
+    scenario("Invoked on a smaller list") {
+      drop(3, List(42)) should be(List(42))
+    }
+
+    scenario("Invoked on a list") {
+      drop(
+        3, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k)
+      ) should be(
+        List('a, 'b, 'd, 'e, 'g, 'h, 'j, 'k)
+      )
+    }
+  }
+
+  feature("Challenge 17 : Split a list into two parts") {
+
+    scenario("Invoked on a list") {
+      check {
+        (position: Int, list: List[Int]) =>
+          (0 until list.length).contains(position) ==> (split(position, list) == list.splitAt(position))
+      }
+    }
+  }
+
+  feature("Challenge 18 : Extract a slice from a list") {
+
+    info(
+      """   Given two indices, I and K, the slice is the list containing the elements from
+      and including the Ith element up to but not including the Kth element of the original list.
+      Start counting the elements with 0."""
+    )
+
+    scenario("Invoked on a list") {
+      check {
+        (list: List[Int]) =>
+        list.length > 1 ==> {
+          val start = Gen.oneOf(0 until list.length).sample.get
+          val end = Gen.oneOf(start + 1 to list.length).sample.get
+          slice(start, end, list) == list.slice(start, end)
+        }
+      }
+    }
+  }
+
+  feature("Challenge 19 : Rotate a list N places to the left") {
+
+    scenario("Invoked on a empty list") {
+      rotate(3, Nil) should be(Nil)
+    }
+
+    scenario("Positive rotation") {
+      rotate(
+        3, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k)
+      ) should be(
+        List('d, 'e, 'f, 'g, 'h, 'i, 'j, 'k, 'a, 'b, 'c)
+      )
+    }
+
+    scenario("Negative rotation") {
+      rotate(
+        -2, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k)
+      ) should be(
+        List('j, 'k, 'a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i)
+      )
+    }
+  }
+
+  feature("Challenge 20 : Remove the Kth element from a list") {
+
+    scenario("Invoked on a empty list") {
+      evaluating {
+        removeAt(3, Nil)
+      } should produce[ArrayIndexOutOfBoundsException]
+    }
+
+    scenario("Invoked on a smaller list") {
+      evaluating {
+        removeAt(3, List(42))
+      } should produce[ArrayIndexOutOfBoundsException]
+    }
+
+    scenario("Invoked on a list") {
+      check {
+        list:List[Int] =>
+        list.nonEmpty ==> {
+          val position = Gen.oneOf(0 until list.length).sample.get
+          removeAt(position,list) == (list.zipWithIndex filterNot { _._2 == position} map { _._1 } ,list(position))
+        }
+      }
+    }
+  }
+}
