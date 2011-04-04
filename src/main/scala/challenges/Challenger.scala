@@ -102,7 +102,7 @@ object Challenger {
   def drop[A](number: Int, list: List[A]): List[A] =
     list.zipWithIndex filter {
       item =>
-      (item._2 + 1) % number != 0
+        (item._2 + 1) % number != 0
     } map {
       _._1
     }
@@ -126,5 +126,45 @@ object Challenger {
         val (cleanedList, item) = removeAt(position - 1, tail)
         (head :: cleanedList, item)
     }
+
+  def insertAt[A](item: A, position: Int, list: List[A]): List[A] =
+    if (position < 0)
+      throw new IllegalArgumentException("Position is negative")
+    else (position, list) match {
+      case (0, _) => item :: list
+      case (_, Nil) => throw new IllegalArgumentException("Position is greater than list length")
+      case (_, head :: tail) => head :: insertAt(item, position - 1, tail)
+    }
+
+  def range(start: Int, end: Int): List[Int] =
+    if (start > end)
+      Nil
+    else
+      start :: range(start + 1, end)
+
+  def randomSelect[A](extractionTimes: Int, list: List[A]): List[A] =
+    if (extractionTimes < 0)
+      throw new IllegalArgumentException("Extraction times is negative")
+    else (extractionTimes, list) match {
+      case (0, _) => Nil
+      case (_, Nil) => throw new IllegalArgumentException("Can't extract more elements than the list can hold")
+      case (_, _) => {
+        val (remainingList, extractedElement) = removeAt((list.length * scala.math.random).toInt, list)
+        extractedElement :: randomSelect(extractionTimes - 1, remainingList)
+      }
+    }
+
+  def lotto(repetition: Int, supLimit: Int): List[Int] =
+    if (repetition < 0)
+      throw new IllegalArgumentException("Repetition times is negative")
+    else if (supLimit < 2)
+      throw new IllegalArgumentException("Invalid limit for Lotto set")
+    else repetition match {
+      case 0 => Nil
+      case _ => (scala.math.random * supLimit + 1).toInt :: lotto(repetition - 1, supLimit)
+    }
+
+  def randomPermute[A](list: List[A]): List[A] = randomSelect(list.length, list)
+
 
 }

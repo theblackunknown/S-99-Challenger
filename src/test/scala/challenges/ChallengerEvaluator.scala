@@ -301,11 +301,11 @@ with Checkers {
     scenario("Invoked on a list") {
       check {
         (list: List[Int]) =>
-        list.length > 1 ==> {
-          val start = Gen.oneOf(0 until list.length).sample.get
-          val end = Gen.oneOf(start + 1 to list.length).sample.get
-          slice(start, end, list) == list.slice(start, end)
-        }
+          list.length > 1 ==> {
+            val start = Gen.oneOf(0 until list.length).sample.get
+            val end = Gen.oneOf(start + 1 to list.length).sample.get
+            slice(start, end, list) == list.slice(start, end)
+          }
       }
     }
   }
@@ -349,12 +349,91 @@ with Checkers {
 
     scenario("Invoked on a list") {
       check {
-        list:List[Int] =>
-        list.nonEmpty ==> {
-          val position = Gen.oneOf(0 until list.length).sample.get
-          removeAt(position,list) == (list.zipWithIndex filterNot { _._2 == position} map { _._1 } ,list(position))
+        list: List[Int] =>
+          list.nonEmpty ==> {
+            val position = Gen.oneOf(0 until list.length).sample.get
+            removeAt(position, list) == (list.zipWithIndex filterNot {
+              _._2 == position
+            } map {
+              _._1
+            }, list(position))
+          }
+      }
+    }
+  }
+
+  feature("Challenge 21 : Insert an element at a given position") {
+
+    scenario("Invoked on a list") {
+      check {
+        list: List[Int] =>
+          list.nonEmpty ==> {
+            val position = Gen.oneOf(0 until list.length).sample.get
+            val item = Gen.oneOf(0 to 100).sample.get
+            val newList = insertAt(item, position, list)
+            newList(position) == item
+          }
+      }
+    }
+  }
+
+  feature("Challenge 22 : Create a list containing all integers within a given range") {
+
+    scenario("Invoked on two integers such that the first is smaller than the second") {
+      check {
+        forAll(Gen.choose(0, 50), Gen.choose(50, 100))(
+          (start: Int, end: Int) => {
+            start < end ==> (range(start, end) == (start to end).toList)
+          }
+        )
+      }
+    }
+  }
+
+  feature("Challenge 23 : Extract a given number of randomly selected elements from a list") {
+
+    info("Hint : Use the solution to problem 20")
+
+    scenario("Invoked on a list") {
+      check {
+        list: List[Int] =>
+          list.nonEmpty ==> {
+            val numberOfExtraction = Gen.oneOf(0 to list.length).sample.get
+            val extractedValues = randomSelect(numberOfExtraction, list)
+            extractedValues.forall(list contains _) && extractedValues.length == numberOfExtraction
+          }
+      }
+    }
+  }
+
+  feature("Challenge 24 : Lotto - Draw N different random numbers from the set 1..M") {
+
+    scenario("Invoked on two integers") {
+      check {
+        maxLimit: Int =>
+        maxLimit > 1 ==> {
+          //100 repetition ought ot be enough to pass this test
+          val repetition = Gen.oneOf(0 to 100).sample.get
+          val randomNumbers = lotto(repetition, maxLimit)
+          val rangeValue = (1 to maxLimit)
+          randomNumbers.forall(rangeValue contains _) && randomNumbers.length == repetition
         }
       }
     }
   }
+
+  feature("Challenge 25 : Generate a random permutation of the elements of a list") {
+
+    info("Hint : Use the solution of problem 23")
+
+    scenario("Invoked on a list") {
+      check {
+        list: List[Int] =>
+          val permuted = randomPermute(list)
+          permuted.forall( list contains _ ) && permuted.length == list.length
+      }
+    }
+  }
+
+
 }
