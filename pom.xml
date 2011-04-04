@@ -10,10 +10,12 @@
     <url>http://aperiodic.net/phil/scala/s-99/</url>
 
     <properties>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
         <encoding>UTF-8</encoding>
         <scala.version>2.8.1</scala.version>
+        <scalacheck.version>1.8</scalacheck>
+        <scalatest.version>1.2</scalatest>
     </properties>
 
     <pluginRepositories>
@@ -35,13 +37,13 @@
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
             <artifactId>scalacheck_${scala.version}</artifactId>
-            <version>1.8</version>
+            <version>${scalacheck.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
-            <version>1.2</version>
+            <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
