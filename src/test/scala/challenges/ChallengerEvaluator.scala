@@ -19,8 +19,6 @@ with Checkers {
 
   println("A challenger come to face all challenges ! ")
 
-  println("List section")
-
   feature("Challenge 01 : Find the last element of a list") {
 
     scenario("Invoked on a empty list") {
@@ -475,6 +473,4 @@ with Checkers {
     scenario("""b) Again, we suppose that a list contains elements that are lists themselves. But this time the objective is to sort the elements according to their length frequency;
     i.e. in the default, sorting is done ascendingly, lists with rare lengths are placed, others with a more frequent length come later.""")(pending)
   }
-
-  println("Arithmetic section")
 }
