@@ -166,5 +166,67 @@ object Challenger {
 
   def randomPermute[A](list: List[A]): List[A] = randomSelect(list.length, list)
 
+  def combination[A](combinationSize: Int, list: List[A]): List[List[A]] = {
+
+    def internal[A](remainingSize: Int, remainingList: List[A]): List[List[A]] = remainingSize match {
+      case 0 => List(Nil)
+      case _ =>
+        remainingList flatMap {
+          item =>
+            for (tail <- internal(remainingSize - 1, remainingList filter (_ != item)))
+            yield item :: tail
+        }
+    }
+    combinationSize match {
+      case 0 => Nil
+      case _ =>
+        list.flatMap {
+          item =>
+            for (tail <- internal(combinationSize - 1, list filter (_ != item)))
+            yield item :: tail
+        }
+    }
+  }
+
+  def group3[A](list: List[A]): List[List[List[A]]] = {
+    for {
+      first <- combination(2, list)
+      firstRemaining = list -- first
+      second <- combination(3, firstRemaining)
+    } yield List(first, second, firstRemaining -- second)
+  }
+
+  def group[A](combinationSet: List[Int], list: List[A]): List[List[List[A]]] = combinationSet match {
+    case Nil =>
+      List(Nil)
+    case combinationSize :: combinationTail =>
+      combination(combinationSize, list) flatMap {
+        item =>
+          group(combinationTail, list -- item) map {
+            item :: _
+          }
+      }
+  }
+
+  def lsort[A](list:List[List[A]]):List[List[A]] =
+    list sortWith { _.length < _.length }
+
+  def lsortFreq[A](list:List[List[A]]):List[List[A]] = {
+    val freqs = Map( encode( list map { _.length } sortWith { _ < _ } ) map { _.swap } : _*)
+    println("Frequence map : " + freqs)
+    list sortWith {
+      (e1,e2) =>
+        freqs(e1.length) < freqs(e2.length)
+    }
+  }
+
+  def main(args: Array[String]) {
+    println("Combination size : " + group3(List("Aldo", "Beat", "Carla", "David", "Evi", "Flip", "Gary", "Hugo", "Ida")).length)
+//    println("Sort List %n%s " format lsort(List(List('a, 'b, 'c), List('d, 'e), List('f, 'g, 'h), List('d, 'e), List('i, 'j, 'k, 'l), List('m, 'n), List('o))).mkString("\n"))
+//    println("Expected : %n%s" format List(List('o), List('d, 'e), List('d, 'e), List('m, 'n), List('a, 'b, 'c), List('f, 'g, 'h), List('i, 'j, 'k, 'l)).mkString("\n"))
+//    println("%s" format List.fill(100)("=").mkString)
+//    println("Sort List %n%s " format lsortFreq(List(List('a, 'b, 'c), List('d, 'e), List('f, 'g, 'h), List('d, 'e), List('i, 'j, 'k, 'l), List('m, 'n), List('o))).mkString("\n"))
+//    println("Expected : %n%s" format List(List('i, 'j, 'k, 'l), List('o), List('a, 'b, 'c), List('f, 'g, 'h), List('d, 'e), List('d, 'e), List('m, 'n)).mkString("\n"))
+  }
 
 }

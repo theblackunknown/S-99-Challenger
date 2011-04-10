@@ -4,8 +4,8 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FeatureSpec
 import org.scalatest.prop.Checkers
 import org.scalacheck.Prop._
-import challenges.Challenger._
 import org.scalacheck.Gen
+import challenges.Challenger._
 
 /**
  *
@@ -18,6 +18,8 @@ with ShouldMatchers
 with Checkers {
 
   println("A challenger come to face all challenges ! ")
+
+  println("List section")
 
   feature("Challenge 01 : Find the last element of a list") {
 
@@ -411,13 +413,13 @@ with Checkers {
     scenario("Invoked on two integers") {
       check {
         maxLimit: Int =>
-        maxLimit > 1 ==> {
-          //100 repetition ought ot be enough to pass this test
-          val repetition = Gen.oneOf(0 to 100).sample.get
-          val randomNumbers = lotto(repetition, maxLimit)
-          val rangeValue = (1 to maxLimit)
-          randomNumbers.forall(rangeValue contains _) && randomNumbers.length == repetition
-        }
+          maxLimit > 1 ==> {
+            //100 repetition ought ot be enough to pass this test
+            val repetition = Gen.oneOf(0 to 100).sample.get
+            val randomNumbers = lotto(repetition, maxLimit)
+            val rangeValue = (1 to maxLimit)
+            randomNumbers.forall(rangeValue contains _) && randomNumbers.length == repetition
+          }
       }
     }
   }
@@ -430,10 +432,49 @@ with Checkers {
       check {
         list: List[Int] =>
           val permuted = randomPermute(list)
-          permuted.forall( list contains _ ) && permuted.length == list.length
+          permuted.forall(list contains _) && permuted.length == list.length
       }
     }
   }
 
+  feature("Challenge 26 : Generate the combinations of K distinct objects chosen from the N elements of a list") {
 
+    info(
+      """Hint : In how many ways can a committee of 3 be chosen from a group of 12 people?
+      We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the well-known binomial coefficient).
+      For pure mathematicians, this result may be great. But we want to really generate all the possibilities.""")
+
+    scenario("Invoked on a list") {
+      //FIXME Incomplete test but too many solutions ...
+      combination(3, List('a, 'b, 'c, 'd, 'e, 'f)).length should be(120)
+    }
+  }
+
+  feature("Challenge 27 : Group the elements of a set into disjoint subsets") {
+
+    scenario("a) In how many ways can a group of 9 people work in 3 disjoint subgroups of 2, 3 and 4 persons? Write a function that generates all the possibilities.") {
+      //FIXME Incomplete test but too many solutions ...
+      group3(List("Aldo", "Beat", "Carla", "David", "Evi", "Flip", "Gary", "Hugo", "Ida")).length should be(15120)
+    }
+
+    //TODO Any idea how to test this property cleanely ?
+    scenario("b) In how many ways can a group of 9 people work in 3 disjoint subgroups of 2, 3 and 4 persons? Write a function that generates all the possibilities.")(pending)
+  }
+
+  feature("Challenge 28 : Sorting a list of lists according to length of sublists") {
+
+    scenario("""a) We suppose that a list contains elements that are lists themselves.
+    The objective is to sort the elements of the list according to their length. E.g. short lists first, longer lists later, or vice versa.""") {
+      check {
+        list: List[List[Int]] =>
+          lsort(list) == list.sortWith { _.length < _.length } || lsort(list) == list.sortWith { _.length > _.length }
+      }
+    }
+
+    //TODO Any idea how to test this property cleanely ?
+    scenario("""b) Again, we suppose that a list contains elements that are lists themselves. But this time the objective is to sort the elements according to their length frequency;
+    i.e. in the default, sorting is done ascendingly, lists with rare lengths are placed, others with a more frequent length come later.""")(pending)
+  }
+
+  println("Arithmetic section")
 }
