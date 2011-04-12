@@ -47,7 +47,7 @@ object Challenger {
 
   def flatten[A](list: List[A]): List[A] = list match {
     case Nil => Nil
-    case (head:List[A]) :: tail => flatten(head) ::: flatten(tail)
+    case (head:List[A]) :: tail => flatten(head ::: flatten(tail))
     case head :: tail => head :: flatten(tail)
   }
 
@@ -191,9 +191,9 @@ object Challenger {
   def group3[A](list: List[A]): List[List[List[A]]] = {
     for {
       first <- combination(2, list)
-      firstRemaining = list filterNot (first contains)
+      firstRemaining = list filterNot(first contains)
       second <- combination(3, firstRemaining)
-    } yield List(first, second, firstRemaining filterNot (second contains))
+    } yield List(first, second, firstRemaining filterNot(second contains))
   }
 
   def group[A](combinationSet: List[Int], list: List[A]): List[List[List[A]]] = combinationSet match {
@@ -202,27 +202,46 @@ object Challenger {
     case combinationSize :: combinationTail =>
       combination(combinationSize, list) flatMap {
         item =>
-          group(combinationTail, list filterNot (item contains)) map {
+          group(combinationTail, list filterNot(item contains)) map {
             item :: _
           }
       }
   }
 
-  def lsort[A](list:List[List[A]]):List[List[A]] =
-    list sortWith { _.length < _.length }
-
-  def lsortFreq[A](list:List[List[A]]):List[List[A]] = {
-    val freqs = Map( encode( list map { _.length } sortWith { _ < _ } ) map { _.swap } : _*)
-    println("Frequence map : " + freqs)
-
+  def lsort[A](list: List[List[A]]): List[List[A]] =
     list sortWith {
-      (e1,e2) =>
+      _.length < _.length
+    }
+
+  def lsortFreq[A](list: List[List[A]]): List[List[A]] = {
+    val freqs = Map(encode(list map {
+      _.length
+    } sortWith {
+      _ < _
+    }) map {
+      _.swap
+    }: _*)
+    println("Frequence map : " + freqs)
+    list sortWith {
+      (e1, e2) =>
         freqs(e1.length) < freqs(e2.length)
     }
   }
 
   def main(args: Array[String]) {
-    println("Flattened : " + flatten( List( List('a,'b), List('c), List('d,'e,'f) ) ) )
+    import challenges.arithmetic.S99Int._
+    for (number <- (1 to 10))
+      println(number + " is prime ? " + number.isPrime)
+    println(1789 + " is prime ? " + 1789.isPrime)
+    println("gcd(36,63) ? " + gcd (36,63))
+    println("35.isCoprimeTo(64) ? " + 35.isCoprimeTo(64))
+    println("10.totient ? " + 10.totient)
+    println("315.primeFactors ? " + 315.primeFactors)
+    println("315.primeFactors ? " + 315.primeFactorMultiplicity)
+    for( i <- 1 to 5 ) test(10090)
+    println("Prime in range 7 to 31 %s " format listPrimesinRange(7 to 31))
+    println("Goldbach 28 : " + 28.goldbach)
+    println("Goldbach 28353464 : " + 28353464.goldbach)
   }
 
 }

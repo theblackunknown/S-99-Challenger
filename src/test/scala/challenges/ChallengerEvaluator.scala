@@ -74,14 +74,9 @@ with Checkers {
     }
 
     scenario("Invoked on a list") {
-      //Scala Check Style
       check {
         (position: Int, list: List[Int]) =>
-          (
-            list.nonEmpty && (0 until list.length).contains(position)
-            ) ==> (
-            nth(position, list) == list(position)
-            )
+          list.nonEmpty && (0 until list.length).contains(position) ==> (nth(position, list) == list(position))
       }
     }
 
@@ -392,7 +387,7 @@ with Checkers {
 
   feature("Challenge 23 : Extract a given number of randomly selected elements from a list") {
 
-    info("Hint : Use the solution to problem 20")
+    info("   Hint : Use the solution to problem 20")
 
     scenario("Invoked on a list") {
       check {
@@ -424,7 +419,7 @@ with Checkers {
 
   feature("Challenge 25 : Generate a random permutation of the elements of a list") {
 
-    info("Hint : Use the solution of problem 23")
+    info("   Hint : Use the solution of problem 23")
 
     scenario("Invoked on a list") {
       check {
@@ -438,7 +433,7 @@ with Checkers {
   feature("Challenge 26 : Generate the combinations of K distinct objects chosen from the N elements of a list") {
 
     info(
-      """Hint : In how many ways can a committee of 3 be chosen from a group of 12 people?
+      """   Hint : In how many ways can a committee of 3 be chosen from a group of 12 people?
       We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the well-known binomial coefficient).
       For pure mathematicians, this result may be great. But we want to really generate all the possibilities.""")
 
@@ -461,8 +456,9 @@ with Checkers {
 
   feature("Challenge 28 : Sorting a list of lists according to length of sublists") {
 
-    scenario("""a) We suppose that a list contains elements that are lists themselves.
-    The objective is to sort the elements of the list according to their length. E.g. short lists first, longer lists later, or vice versa.""") {
+    scenario("""   a) We suppose that a list contains elements that are lists themselves.
+    The objective is to sort the elements of the list according to their length.
+    E.g. short lists first, longer lists later, or vice versa.""") {
       check {
         list: List[List[Int]] =>
           lsort(list) == list.sortWith { _.length < _.length } || lsort(list) == list.sortWith { _.length > _.length }
@@ -470,7 +466,9 @@ with Checkers {
     }
 
     //TODO Any idea how to test this property cleanely ?
-    scenario("""b) Again, we suppose that a list contains elements that are lists themselves. But this time the objective is to sort the elements according to their length frequency;
-    i.e. in the default, sorting is done ascendingly, lists with rare lengths are placed, others with a more frequent length come later.""")(pending)
+    scenario("""   b) Again, we suppose that a list contains elements that are lists themselves.
+    But this time the objective is to sort the elements according to their length frequency;
+    i.e. in the default, sorting is done ascendingly,
+    lists with rare lengths are placed, others with a more frequent length come later.""")(pending)
   }
 }
